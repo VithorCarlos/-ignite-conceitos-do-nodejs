@@ -48,7 +48,7 @@ app.post("/users", (request, response) => {
 
 app.get("/todos", checksExistsUserAccount, (request, response) => {
   const { user } = request;
-
+  
   return response.json(user.todos);
 });
 
@@ -67,7 +67,7 @@ app.post("/todos", checksExistsUserAccount, (request, response) => {
 
   user.todos.push(todoData);
 
-  return response.json(201).json(todoData);
+  return response.status(201).json(todoData);
 });
 
 app.put("/todos/:id", checksExistsUserAccount, (request, response) => {
@@ -88,16 +88,17 @@ app.put("/todos/:id", checksExistsUserAccount, (request, response) => {
 });
 
 app.patch("/todos/:id/done", checksExistsUserAccount, (request, response) => {
-  const { users } = request;
+  const { user } = request;
   const { id } = request.params;
 
-  const findIdTodoByUser = users.todos.find((todo) => todo.id === id);
+  const findIdTodoByUser = user.todos.find(todo => todo.id === id);
 
   if (!findIdTodoByUser) {
     return response.status(404).json({ error: "Todo Cannot be Finished" });
   }
 
   findIdTodoByUser.done = true;
+  
   return response.json(findIdTodoByUser);
 });
 
@@ -107,8 +108,8 @@ app.delete("/todos/:id", checksExistsUserAccount, (request, response) => {
 
   const findIdTodoIndex = user.todos.findIndex((todo) => todo.id === id);
 
-  // n foi encontrado
-  if (!findIdTodoIndex === -1) {
+ 
+  if (findIdTodoIndex === -1) {
     return response.status(404).json({ error: "Todo Cannot be Deleted" });
   }
 
